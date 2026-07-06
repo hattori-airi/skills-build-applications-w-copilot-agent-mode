@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { fetchEndpointData } from './apiClient';
+import { normalizeListResponse } from './apiClient';
 
-const API_PATH = '/api/users/';
+const API_ENDPOINT = import.meta.env.VITE_CODESPACE_NAME
+  ? `https://${import.meta.env.VITE_CODESPACE_NAME}-8000.app.github.dev/api/users/`
+  : 'http://localhost:8000/api/users/';
 
 function Users() {
   const [items, setItems] = useState([]);
@@ -15,11 +17,16 @@ function Users() {
 
     async function load() {
       try {
-        const result = await fetchEndpointData(API_PATH);
+        const response = await fetch(API_ENDPOINT);
+        if (!response.ok) {
+          throw new Error(`Request failed: ${response.status}`);
+        }
+        const payload = await response.json();
+        const normalized = normalizeListResponse(payload);
         if (!mounted) return;
-        setItems(result.items);
-        setCount(result.count);
-        setEndpoint(result.endpoint);
+        setItems(normalized.items);
+        setCount(normalized.count);
+        setEndpoint(API_ENDPOINT);
       } catch (err) {
         if (!mounted) return;
         setError(err instanceof Error ? err.message : 'Unknown error');
