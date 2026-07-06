@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { fetchComponentData } from './apiClient';
+import { fetchEndpointData } from './apiClient';
+
+const API_PATH = '/api/workouts/';
 
 function Workouts() {
   const [items, setItems] = useState([]);
@@ -13,7 +15,7 @@ function Workouts() {
 
     async function load() {
       try {
-        const result = await fetchComponentData('workouts');
+        const result = await fetchEndpointData(API_PATH);
         if (!mounted) return;
         setItems(result.items);
         setCount(result.count);

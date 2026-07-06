@@ -1,9 +1,9 @@
 export function getApiBaseUrl() {
   const codespaceName = import.meta.env.VITE_CODESPACE_NAME;
   if (codespaceName) {
-    return `https://${codespaceName}-8000.app.github.dev/api`;
+    return `https://${codespaceName}-8000.app.github.dev`;
   }
-  return 'http://localhost:8000/api';
+  return 'http://localhost:8000';
 }
 
 export function normalizeListResponse(payload) {
@@ -25,7 +25,18 @@ export function normalizeListResponse(payload) {
 }
 
 export async function fetchComponentData(componentName) {
-  const endpoint = `${getApiBaseUrl()}/${componentName}/`;
+  const endpoint = `${getApiBaseUrl()}/api/${componentName}/`;
+  const response = await fetch(endpoint);
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status}`);
+  }
+  const payload = await response.json();
+  const normalized = normalizeListResponse(payload);
+  return { endpoint, ...normalized };
+}
+
+export async function fetchEndpointData(apiPath) {
+  const endpoint = `${getApiBaseUrl()}${apiPath}`;
   const response = await fetch(endpoint);
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status}`);

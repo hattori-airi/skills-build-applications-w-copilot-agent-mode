@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { fetchComponentData } from './apiClient';
+import { fetchEndpointData } from './apiClient';
+
+const API_PATH = '/api/users/';
 
 function Users() {
   const [items, setItems] = useState([]);
@@ -13,7 +15,7 @@ function Users() {
 
     async function load() {
       try {
-        const result = await fetchComponentData('users');
+        const result = await fetchEndpointData(API_PATH);
         if (!mounted) return;
         setItems(result.items);
         setCount(result.count);
